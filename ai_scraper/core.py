@@ -512,8 +512,13 @@ class AIScraper:
         ):
             for tag in soup.find_all(name):
                 tag.decompose()
-        for tag in soup.find_all(attrs={"style": re.compile(r"display\s*:\s*none")}):
-            tag.decompose()
+        for tag in soup.select("[style]"):
+            if re.search(
+                r"display\s*:\s*none",
+                str(tag.get("style") or ""),
+                re.IGNORECASE,
+            ):
+                tag.decompose()
         for pattern in (
             r"cookie",
             r"consent",

@@ -28,6 +28,22 @@ def records(count=5):
 SCHEMA = {"title": "Title", "url": "URL", "price": "Price"}
 
 
+def test_inline_hidden_content_is_removed_case_insensitively():
+    scraper = AIScraper(
+        learning=False,
+        browser=FakeBrowser(),
+        llm_client=FakeLLM(),
+    )
+
+    cleaned, applied_rules = scraper._clean_html_with_rules(
+        "<main><p style='DISPLAY: none'>hidden</p><p>visible</p></main>"
+    )
+
+    assert "hidden" not in cleaned
+    assert "visible" in cleaned
+    assert applied_rules == []
+
+
 def test_successful_scrape_with_prefetched_html(substantial_html):
     llm = FakeLLM(outputs=[records()])
     scraper = AIScraper(
